@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>你走对路了吗？| LPA 人生路径评估</title>
+
+<!-- Open Graph (微信/QQ/微博通用) -->
+<meta property="og:title" content="你走对路了吗？| LPA 人生路径评估">
+<meta property="og:description" content="一个不太客气的测试。4个维度×16种类型×5个阶段，看看你现在的路，配不配得上你这个人。25题，约5分钟。">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:site_name" content="LPA 人生路径评估">
+
+<!-- 微信专用 -->
+<meta itemprop="name" content="你走对路了吗？| LPA 人生路径评估">
+<meta itemprop="description" content="一个不太客气的测试。4个维度×16种类型×5个阶段，看看你现在的路，配不配得上你这个人。">
+
+<!-- 禁止移动端号码识别 -->
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="email=no">
+
+<!-- iOS Web App -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="LPA 人生评估">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: linear-gradient(135deg, #fdf6f0 0%, #f7efe6 50%, #f0e8dd 100%);
+  min-height: 100vh;
+  color: #3d3027;
+  line-height: 1.6;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
+}
+
+.container {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 20px 0 40px;
+}
+
+/* ===== Screen management ===== */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* ===== Welcome screen ===== */
+.welcome { text-align: center; padding-top: 48px; }
+
+.logo {
+  width: 80px; height: 80px;
+  margin: 0 auto 24px;
+  background: linear-gradient(135deg, #c8956c 0%, #a67c52 100%);
+  border-radius: 24px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px; color: #fff;
+  box-shadow: 0 8px 32px rgba(166,124,82,0.25);
+}
+
+.welcome h1 {
+  font-size: 28px; font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: 2px;
+}
+.welcome .subtitle {
+  font-size: 15px; color: #8b7355;
+  margin-bottom: 32px;
+}
+
+.intro-cards { text-align: left; margin-bottom: 32px; }
+.intro-cards .card {
+  background: #fff; border-radius: 14px; padding: 18px 20px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  display: flex; gap: 14px; align-items: flex-start;
+}
+.intro-cards .card .icon { font-size: 24px; flex-shrink: 0; }
+.intro-cards .card .text h4 { font-size: 15px; margin-bottom: 4px; }
+.intro-cards .card .text p { font-size: 13px; color: #8b7355; }
+
+.btn {
+  display: inline-block; padding: 14px 48px;
+  border: none; border-radius: 100px;
+  font-size: 16px; font-weight: 600; cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 1px;
+}
+.btn-primary {
+  background: #a67c52; color: #fff;
+  box-shadow: 0 4px 16px rgba(166,124,82,0.35);
+}
+.btn-primary:hover { background: #8b6842; transform: translateY(-1px); }
+.btn-ghost {
+  background: transparent; color: #a67c52;
+  border: 1.5px solid #d4b896;
+}
+.btn-ghost:hover { background: rgba(166,124,82,0.06); }
+
+/* ===== Quiz screen ===== */
+.quiz-header {
+  margin-bottom: 28px;
+}
+
+.progress-wrap {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 8px;
+}
+.progress-bar {
+  flex: 1; height: 6px; background: #e8ddd0;
+  border-radius: 3px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%; background: #a67c52; border-radius: 3px;
+  transition: width 0.3s;
+}
+.progress-text {
+  font-size: 13px; color: #8b7355; white-space: nowrap;
+  min-width: 40px; text-align: right;
+}
+
+.question-type-tag {
+  font-size: 12px; color: #a67c52; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.question-text {
+  font-size: 20px; font-weight: 600;
+  margin-bottom: 28px;
+  line-height: 1.5;
+}
+
+.options { display: flex; flex-direction: column; gap: 10px; }
+
+.option {
+  background: #fff; border: 2px solid #e8ddd0;
+  border-radius: 12px; padding: 14px 18px;
+  cursor: pointer; transition: all 0.15s;
+  display: flex; align-items: center; gap: 12px;
+  font-size: 15px;
+}
+.option:hover { border-color: #c8956c; background: #fefaf6; }
+.option.selected { border-color: #a67c52; background: #faf5ef; }
+
+/* Likert options */
+.likert { display: flex; justify-content: space-between; gap: 6px; }
+.likert .opt-btn {
+  flex: 1; background: #fff; border: 2px solid #e8ddd0;
+  border-radius: 12px; padding: 14px 6px;
+  cursor: pointer; text-align: center; transition: all 0.15s;
+  font-size: 13px; line-height: 1.4;
+}
+.likert .opt-btn:hover { border-color: #c8956c; }
+.likert .opt-btn.selected { border-color: #a67c52; background: #faf5ef; font-weight: 600; }
+.likert .opt-btn .label { font-size: 11px; color: #8b7355; margin-top: 4px; }
+
+.nav-btns {
+  display: flex; justify-content: space-between;
+  margin-top: 32px; gap: 12px;
+}
+.nav-btns .btn { padding: 12px 32px; font-size: 14px; }
+
+/* ===== Result screen ===== */
+.result { padding-top: 16px; }
+
+.result-header {
+  text-align: center; margin-bottom: 32px;
+}
+
+.type-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #a67c52 0%, #c8956c 100%);
+  color: #fff; font-size: 36px; font-weight: 800;
+  padding: 12px 32px; border-radius: 18px;
+  letter-spacing: 6px;
+  margin-bottom: 8px;
+}
+.type-name {
+  font-size: 22px; font-weight: 700;
+  margin-bottom: 4px;
+}
+.type-tagline {
+  font-size: 14px; color: #8b7355;
+}
+
+.section-title {
+  font-size: 14px; font-weight: 700; color: #a67c52;
+  text-transform: uppercase; letter-spacing: 2px;
+  margin-bottom: 14px;
+}
+
+/* Dimension bars */
+.dimensions { margin-bottom: 28px; }
+.dim-row {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 14px;
+}
+.dim-label {
+  width: 28px; font-size: 24px; font-weight: 700;
+  text-align: center; flex-shrink: 0;
+}
+.dim-bar-wrap { flex: 1; }
+.dim-poles {
+  display: flex; justify-content: space-between;
+  font-size: 12px; color: #8b7355; margin-bottom: 4px;
+}
+.dim-bar {
+  height: 10px; background: #e8ddd0; border-radius: 5px;
+  position: relative; overflow: visible;
+}
+.dim-bar-fill {
+  height: 100%; border-radius: 5px;
+  position: absolute;
+  transition: width 0.6s ease;
+}
+.dim-bar-fill.left { right: 50%; background: #d4b896; }
+.dim-bar-fill.right { left: 50%; background: #a67c52; }
+.dim-dot {
+  position: absolute; top: 50%; transform: translate(-50%, -50%);
+  width: 18px; height: 18px; background: #fff;
+  border: 3px solid #a67c52; border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  z-index: 1;
+}
+
+/* Phase card */
+.phase-card {
+  background: #fff; border-radius: 14px; padding: 20px 22px;
+  margin-bottom: 28px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  border-left: 4px solid #a67c52;
+}
+.phase-card .phase-number {
+  font-size: 12px; color: #a67c52; font-weight: 700;
+  letter-spacing: 2px; margin-bottom: 4px;
+}
+.phase-card .phase-name {
+  font-size: 20px; font-weight: 700; margin-bottom: 6px;
+}
+.phase-card .phase-desc {
+  font-size: 14px; color: #5c4a3a; line-height: 1.6;
+}
+
+/* Match analysis */
+.match-card {
+  background: #fff; border-radius: 14px; padding: 20px 22px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+.match-level {
+  display: inline-block; padding: 4px 12px;
+  border-radius: 100px; font-size: 13px; font-weight: 600;
+  margin-bottom: 10px;
+}
+.match-level.high { background: #e8f0e4; color: #4a7c3f; }
+.match-level.medium { background: #f5f0e4; color: #b08a3d; }
+.match-level.low { background: #f5e8e4; color: #b0604d; }
+
+.match-card .match-title { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+.match-card .match-body { font-size: 14px; color: #5c4a3a; line-height: 1.7; }
+
+.suggestions {
+  background: #fff; border-radius: 14px; padding: 20px 22px;
+  margin-bottom: 28px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+.suggestions h4 { font-size: 16px; margin-bottom: 12px; }
+.suggestions ul { padding-left: 20px; }
+.suggestions li { font-size: 14px; color: #5c4a3a; margin-bottom: 8px; line-height: 1.5; }
+
+.restart-wrap { text-align: center; margin-bottom: 40px; }
+
+/* ===== Footer ===== */
+.footer {
+  text-align: center; font-size: 12px; color: #b8a590;
+  padding: 20px 0;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 480px) {
+  .welcome h1 { font-size: 24px; }
+  .question-text { font-size: 17px; }
+  .likert { flex-wrap: wrap; }
+  .likert .opt-btn { min-width: 52px; }
+  .type-badge { font-size: 28px; padding: 10px 24px; letter-spacing: 4px; }
+  .container { padding: 10px 0 30px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ==================== WELCOME SCREEN ==================== -->
+  <div class="screen active" id="screen-welcome">
+    <div class="welcome">
+      <div class="logo">🧭</div>
+      <h1>你走对路了吗？</h1>
+      <p class="subtitle">一个不太客气的测试。别指望它哄你。</p>
+
+      <div class="intro-cards">
+        <div class="card">
+          <span class="icon">🔍</span>
+          <div class="text">
+            <h4>你以为你了解自己？</h4>
+            <p>4 个维度 × 16 种类型，但重点不是贴标签——是让你看到自己一直在躲的那部分</p>
+          </div>
+        </div>
+        <div class="card">
+          <span class="icon">📍</span>
+          <div class="text">
+            <h4>你卡在哪一关了？</h4>
+            <p>人生不是一条直线。你可能在找方向、在试错、在死磕、在平衡、或者在酝酿一场逃离</p>
+          </div>
+        </div>
+        <div class="card">
+          <span class="icon">🎯</span>
+          <div class="text">
+            <h4>你现在的路，配得上你这个人吗？</h4>
+            <p>这是这个测试真正要回答的问题。不是「你是什么类型」，而是「你现在过的日子，跟你的底层的自己是不是一路的」</p>
+          </div>
+        </div>
+      </div>
+
+      <p style="font-size:14px;color:#8b7355;margin-bottom:8px;">25 题 · 约 5 分钟 · 回答的时候别骗自己</p>
+      <button class="btn btn-primary" onclick="startQuiz()">开始测试</button>
+    </div>
+  </div>
+
+  <!-- ==================== QUIZ SCREEN ==================== -->
+  <div class="screen" id="screen-quiz">
+    <div class="quiz-header">
+      <div class="progress-wrap">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+        </div>
+        <span class="progress-text" id="progress-text">0/25</span>
+      </div>
+      <div class="question-type-tag" id="question-tag"></div>
+      <div class="question-text" id="question-text"></div>
+    </div>
+
+    <div id="options-container"></div>
+
+    <div class="nav-btns">
+      <button class="btn btn-ghost" id="btn-prev" onclick="prevQuestion()" style="visibility:hidden;">← 上一题</button>
+      <button class="btn btn-primary" id="btn-next" onclick="nextQuestion()">下一题 →</button>
+    </div>
+  </div>
+
+  <!-- ==================== RESULT SCREEN ==================== -->
+  <div class="screen" id="screen-result">
+    <div class="result"></div>
+    <div class="restart-wrap">
+      <button class="btn btn-ghost" onclick="restart()">重新测试</button>
+    </div>
+    <div class="footer">
+      一个不太客气的测试。说的不一定都对，但至少没哄你。
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ==================== QUESTION BANK ====================
+
+// Type dimension questions (Q1-Q20): 5-point Likert
+// phase: 1 (strongly disagree) to 5 (strongly agree)
+// dim: 'I','E','R','W','B','A','N','P'
+const dimQuestions = [
+  { id: 1, text: "做重要决定的时候，你是先问自己「我想要什么」，还是先算「别人会怎么看」？说实话。", dim: "I", phase: "type",
+    options: [
+      "说实话，我基本上第一反应就是算别人会怎么看",
+      "大多数时候外界的看法比自己的想法更重",
+      "看具体什么事，一半一半吧",
+      "我通常会先听自己的，但也参考别人的看法",
+      "我从来都是先听自己的。别人怎么看，那是别人的事",
+    ]},
+  { id: 2, text: "如果周围所有人都觉得你选的路不靠谱，你还能不能心安理得地走下去？不是嘴硬，是真不心虚。", dim: "I", phase: "type",
+    options: [
+      "不行，周围人都反对的话我八成会改",
+      "嘴上说不在意，但心里会很虚，可能会动摇",
+      "会难受一阵子，但不一定会改",
+      "会有点不舒服，但该走还是走",
+      "完全不在意。我选的路，别人看不懂是别人的问题",
+    ]},
+  { id: 3, text: "你说的「理想生活」，有多少是自己真的想要，有多少是别人塞给你的标准答案？你分得清吗？", dim: "I", phase: "type",
+    options: [
+      "说实话我不太分得清。好像大部分都是别人告诉我的",
+      "我能感觉到有很多是外界塞的，但自己那部分还不太确定",
+      "大概一半一半吧，有些是我选的有些是被影响的",
+      "大部分是我自己要的，别人的影响不大",
+      "分得非常清楚。我的生活就是我自己选的，跟别人的标准没关系",
+    ]},
+  { id: 4, text: "如果没有一个人给你鼓掌、点赞、说「你好厉害」，你还能撑多久？你确定你不是在靠外部反馈续命？", dim: "E", phase: "type",
+    options: [
+      "撑不了太久。说实话，我就是需要有人看到和认可",
+      "会很难受，但尽量撑一阵子",
+      "能撑一段时间，但久了肯定自我怀疑",
+      "外部反馈是锦上添花，没有也不是不能活",
+      "完全不需要。我做这些不需要观众，自己知道就行",
+    ]},
+  { id: 5, text: "你是不是得看到一些「证据」——工资涨了、title变了、有人羡慕了——才敢对自己说：嗯，我可能没走错？", dim: "E", phase: "type",
+    options: [
+      "是的。没有这些外部证据，我真的会不知道自己对不对",
+      "大部分时候需要这些东西来确认没走偏",
+      "需要一些，但不是全部。有时候自己也感觉得到",
+      "偶尔会拿这些参考一下，但主要不是靠它们",
+      "完全不需要。我自己的感受就是最准的尺子",
+    ]},
+
+  { id: 6, text: "让你在同一个领域待十年，你是会觉得「终于可以安心扎下去了」，还是隐约担心外面的世界更精彩？", dim: "R", phase: "type",
+    options: [
+      "十年？三年我都怕自己待不住",
+      "说实话，会很担心错过外面更好的东西",
+      "一边期待深耕，一边也有点担心错过",
+      "大部分时候觉得安心，偶尔好奇外面的世界",
+      "求之不得。我就想在一个地方扎到最深，外面多精彩跟我没关系",
+    ]},
+  { id: 7, text: "你不轻易换方向——是因为真的找到了想扎根的地方，还是因为你只是害怕换？这两件事，你自己分得清吗？", dim: "R", phase: "type",
+    options: [
+      "说实话，可能更多是不敢换，用「坚持」当幌子",
+      "多少有点害怕的成分，但也确实想在一件事上做好",
+      "一半一半，分不太清",
+      "大部分是因为找到了想待的地方，怕的成分很少",
+      "分得很清楚。我不换是因为我真的想在这扎下去，不是怕",
+    ]},
+  { id: 8, text: "别人跳槽、转行、跨界的时候，你是真的不羡慕，还是嘴上说不羡慕、心里偷偷在算？", dim: "R", phase: "type",
+    options: [
+      "我承认，我其实心里是羡慕的",
+      "有时候会有点羡慕，但也不会因为羡慕就跟着走",
+      "偶尔会想一下，但很快就过了",
+      "基本上不羡慕，偶尔好奇他们的故事而已",
+      "完全不羡慕。他们折腾他们的，我扎根我的，各走各的",
+    ]},
+  { id: 9, text: "一件事做熟了就开始觉得没劲了，脑子里已经在盘算「下一个是什么」——你是不是这种人？承认吧。", dim: "W", phase: "type",
+    options: [
+      "完全不是。一件事越做越熟我越有安全感",
+      "不太会，做熟了反而更安心更顺手",
+      "偶尔会有这种感觉，但不是常态",
+      "大部分时候是这样，做熟了就该换点新东西了",
+      "我就是这种人。熟了就没劲了，必须开始找下一个兴奋点",
+    ]},
+  { id: 10, text: "在一个地方待太久，你是觉得安心，还是觉得「我是不是被困住了、正在错过什么」？", dim: "W", phase: "type",
+    options: [
+      "越久越安心，待得久说明走对了",
+      "大部分时候觉得安心，偶尔会想一下外面的可能",
+      "看时期，有时候安心有时候焦虑",
+      "经常会觉得被困住了，需要换换空气",
+      "待久了就是被困住了。我必须保持流动，不然会生锈",
+    ]},
+
+  { id: 11, text: "没有产出的一天，你是不是直接给它判死刑——「今天废了」？还是你也能觉得「今天过得很舒服，够了」？", dim: "B", phase: "type",
+    options: [
+      "对，没产出的一天就是浪费了，我心里会给它打叉",
+      "大部分时候会觉得今天不太行，有点虚",
+      "看情况。有时候能接受「浪费时间」，有时候不能",
+      "多数时候能接受。舒服地过一天也是正经事",
+      "完全能接受。不需要每天都产出，活着本身就有价值",
+    ]},
+  { id: 12, text: "如果这辈子没人知道你做了什么、取得了什么，你还能觉得这一生值得吗？你问问自己。", dim: "B", phase: "type",
+    options: [
+      "说实话，没人知道我做了什么的话，我会觉得这辈子亏了",
+      "可能会觉得少了点什么，需要被看见才算数",
+      "不太确定。没想过这么极端的问题",
+      "大概率还是觉得值得。我活给自己看",
+      "当然值得。我被不被知道，跟我活得好不好是两回事",
+    ]},
+  { id: 13, text: "你是享受「做一件事的过程」，还是更享受「做完之后打勾的那一刻」？你回答之前想清楚。", dim: "B", phase: "type",
+    options: [
+      "就是打完勾那一刻最爽。过程是为了那个结果存在的",
+      "结果更重要，但过程中偶尔也有享受的时候",
+      "一半一半，缺哪个都不对",
+      "过程更让我享受，结果只是顺便的",
+      "我完全是在享受过程。打勾不打勾我不太在乎",
+    ]},
+  { id: 14, text: "你是不是需要看到进度条在动、成果在堆、目标在被划掉，才觉得今天没白活？没有这些你会慌吗？", dim: "A", phase: "type",
+    options: [
+      "对。没有可见的进度和成果，我会非常焦虑",
+      "大部分时候需要看到东西在推进才安心",
+      "有时候需要，有时候不需要。看那天的状态",
+      "偶尔需要一些反馈，但不强烈",
+      "完全不需要。我内心知道今天过得好不好，不需要进度条告诉我",
+    ]},
+  { id: 15, text: "搞定了这个目标——然后呢？你是不是马上需要奔向下一个，因为你不敢停下来面对「然后就没有然后了」？", dim: "A", phase: "type",
+    options: [
+      "对。我停不下来，一停下来就觉得空落落的",
+      "大多数时候马上就会找下一个目标来追",
+      "有时候能歇一下，但歇太久会慌",
+      "能在目标之间给自己一些喘息时间，不赶",
+      "完全不会。达成一个之后我能开开心心地休息很久",
+    ]},
+
+  { id: 16, text: "你更愿意在别人搭好的舞台上把自己的戏演到极致，还是心里一直憋着要自己搭一个新舞台？", dim: "N", phase: "type",
+    options: [
+      "我就是要自己搭新舞台。别人的舞台再好我也待不久",
+      "在别人的舞台上做好是第一步，但心里一直想自己搞一个",
+      "两种都行，各有各的好",
+      "我更愿意在已有的平台上把事情做到最好",
+      "完全不想自己搭。把现有的事做到极致，比什么都强",
+    ]},
+  { id: 17, text: "帮别人变好、看别人因为你不一样了——这种满足感，能不能比得上你自己站上领奖台的那一刻？", dim: "N", phase: "type",
+    options: [
+      "比不上。我自己拿成绩的爽感是别的替代不了的",
+      "不太能比，但帮到别人也有自己的快乐",
+      "两种是不同的满足感，不好比",
+      "差不多，有时候帮到别人甚至更满足",
+      "远超。看别人因为我变得不一样，比我站上领奖台爽太多了",
+    ]},
+  { id: 18, text: "你是不是更信「慢慢来比较扎实」，而不是那些「一夜颠覆行业」的故事？你是真的信，还是只是不敢赌？", dim: "N", phase: "type",
+    options: [
+      "说实话，可能就是我怂，拿「稳」来给自己找台阶",
+      "确实有不敢赌的成分，但也确实相信积累",
+      "一半一半，分不太清哪个更多",
+      "大部分是因为我真的信扎实积累的力量",
+      "我完全信奉慢慢来。那些一夜暴富一夜颠覆的故事，我不吃",
+    ]},
+  { id: 19, text: "你是不是经常在脑子里想「现在这套做法不行，应该有更好的」——而且你忍不住想说出口？", dim: "P", phase: "type",
+    options: [
+      "完全不会。现有做法一定有它的道理",
+      "偶尔会有点想法，但不太会说，觉得说了也没用",
+      "有时候会有这种念头，看情况说",
+      "经常会这么想，而且大多数时候忍不住说出来",
+      "我就是这种人。天天在想怎么改，天天在说，忍都忍不住",
+    ]},
+  { id: 20, text: "你身边是不是经常是你第一个开口说「要不试试这个新的」？还是你通常是那个翻白眼的人？", dim: "P", phase: "type",
+    options: [
+      "我通常是那个翻白眼的。等等，让我看看有没有坑",
+      "我很少第一个跳出来，但也不是翻白眼那个",
+      "看情况。有时候我提，有时候别人提",
+      "大部分时候是我先说「要不试试」",
+      "永远是我第一个开口。我就是那个永远想试新东西的人",
+    ]},
+];
+
+// Phase questions (Q21-Q25): single choice
+const phaseQuestions = [
+  {
+    id: 21, text: "说到「人生方向」这四个字——你的第一反应是什么？别想，直接选。", phase: "phase",
+    options: [
+      { label: "别问了。一团雾。还在找。", phase: "orienting" },
+      { label: "大概有几个可能，都在试，哪个都不敢定", phase: "experimenting" },
+      { label: "方向很清楚，正在拼命跑，没空想别的", phase: "committing" },
+      { label: "方向不是问题了，怎么把日子过好才是问题", phase: "integrating" },
+      { label: "以前以为有的方向，现在发现好像不对了", phase: "renewing" },
+    ]
+  },
+  {
+    id: 22, text: "你现在的工作 / 学习状态，说句大实话：", phase: "phase",
+    options: [
+      { label: "连到底该干什么都不知道，还在瞎碰", phase: "orienting" },
+      { label: "什么都浅尝了一下，什么都不敢往深了走，怕选错", phase: "experimenting" },
+      { label: "方向定了，就是吭哧干活。累，但心里踏实", phase: "committing" },
+      { label: "已经过了拼命证明自己的阶段，现在想慢下来，把各方都顾好", phase: "integrating" },
+      { label: "干够了。看不到意义了。想跑，但还不知道往哪跑", phase: "renewing" },
+    ]
+  },
+  {
+    id: 23, text: "想一下三五年后的自己——你脑子里出现的是什么？", phase: "phase",
+    options: [
+      { label: "三年后？三个月后我都看不清。先活明白眼前再说", phase: "orienting" },
+      { label: "好像有很多条路，但每一条都雾蒙蒙的，看不清尽头", phase: "experimenting" },
+      { label: "有一条大概清晰的路，我就沿着它走，不东张西望", phase: "committing" },
+      { label: "路是有的，但我现在更在意路边有没有好风景", phase: "integrating" },
+      { label: "感觉现在的路快要断了，得换，但换哪条还不知道", phase: "renewing" },
+    ]
+  },
+  {
+    id: 24, text: "给现在的生活打个分吧。然后——别端着了，说句实话：", phase: "phase",
+    options: [
+      { label: "还谈不上打几分，评分标准我自己都还没搞明白", phase: "orienting" },
+      { label: "有高有低，但还行吧。试错嘛，总得交点学费", phase: "experimenting" },
+      { label: "不轻松，但心里是实的。我知道方向对，剩下的就是干", phase: "committing" },
+      { label: "挺好的。不是完美的，但我已经不跟完美死磕了", phase: "integrating" },
+      { label: "分数在往下掉。有些东西不对了，具体是什么我说不清楚", phase: "renewing" },
+    ]
+  },
+  {
+    id: 25, text: "最近这段时间，你把最多的时间和精力烧在了什么地方？", phase: "phase",
+    options: [
+      { label: "看书、思考、做各种测试、一个人待着——想把「自己」搞明白", phase: "orienting" },
+      { label: "报课、混圈子、见人、试项目——在行动中碰运气", phase: "experimenting" },
+      { label: "死磕一件事、一个技能、一个产出——不做出东西不松手", phase: "committing" },
+      { label: "陪重要的人、整理经验、照顾身体和情绪——在慢下来", phase: "integrating" },
+      { label: "发呆、焦虑、反复琢磨、偷偷看别的机会——在酝酿一场逃离", phase: "renewing" },
+    ]
+  },
+];
+
+const allQuestions = [...dimQuestions, ...phaseQuestions];
+const TOTAL = allQuestions.length;
+
+// ==================== STATE ====================
+let currentIdx = 0;
+// answers: for dim q's → { score: 1-5 }; for phase q's → { phase: "orienting"|... }
+let answers = {};
+
+// ==================== SCREEN SWITCHING ====================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+}
+
+// ==================== QUIZ FLOW ====================
+function startQuiz() {
+  currentIdx = 0;
+  answers = {};
+  showScreen('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = allQuestions[currentIdx];
+  const container = document.getElementById('options-container');
+  const tag = document.getElementById('question-tag');
+  const text = document.getElementById('question-text');
+  const progressFill = document.getElementById('progress-fill');
+  const progressText = document.getElementById('progress-text');
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
+
+  progressFill.style.width = ((currentIdx / TOTAL) * 100) + '%';
+  progressText.textContent = (currentIdx + 1) + '/' + TOTAL;
+
+  btnPrev.style.visibility = currentIdx === 0 ? 'hidden' : 'visible';
+
+  if (currentIdx === TOTAL - 1) {
+    btnNext.textContent = '查看结果 →';
+  } else {
+    btnNext.textContent = '下一题 →';
+  }
+  btnNext.disabled = (answers[q.id] === undefined);
+  btnNext.style.opacity = btnNext.disabled ? '0.4' : '1';
+
+  if (q.phase === 'type') {
+    tag.textContent = '选一个最接近你想法的 · 第 ' + (currentIdx + 1) + ' 题';
+    text.textContent = q.text;
+
+    const saved = answers[q.id];
+    container.innerHTML = '<div class="options">' +
+      q.options.map((label, i) => {
+        const score = i + 1;
+        const sel = saved === score ? ' selected' : '';
+        return '<div class="option' + sel + '" onclick="selectLikert(this,' + q.id + ',' + score + ')">' +
+          label + '</div>';
+      }).join('') + '</div>';
+  } else {
+    tag.textContent = '阶段定位 · 第 ' + (currentIdx + 1) + ' 题';
+    text.textContent = q.text;
+
+    const saved = answers[q.id];
+    container.innerHTML = '<div class="options">' +
+      q.options.map(opt => {
+        const sel = saved === opt.phase ? ' selected' : '';
+        return '<div class="option' + sel + '" onclick="selectPhase(this,' + q.id + ',\'' + opt.phase + '\')">' +
+          opt.label + '</div>';
+      }).join('') + '</div>';
+  }
+}
+
+function selectLikert(el, qid, score) {
+  answers[qid] = score;
+  document.getElementById('btn-next').disabled = false;
+  document.getElementById('btn-next').style.opacity = '1';
+  document.querySelectorAll('#options-container .option').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function selectPhase(el, qid, phase) {
+  answers[qid] = phase;
+  document.getElementById('btn-next').disabled = false;
+  document.getElementById('btn-next').style.opacity = '1';
+  document.querySelectorAll('#options-container .option').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function nextQuestion() {
+  const q = allQuestions[currentIdx];
+  if (answers[q.id] === undefined) return;
+
+  if (currentIdx < TOTAL - 1) {
+    currentIdx++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function prevQuestion() {
+  if (currentIdx > 0) {
+    currentIdx--;
+    renderQuestion();
+  }
+}
+
+// ==================== SCORING ====================
+function calculateType() {
+  // Accumulate scores per dimension
+  let scores = { I: 0, E: 0, R: 0, W: 0, B: 0, A: 0, N: 0, P: 0 };
+  let counts = { I: 0, E: 0, R: 0, W: 0, B: 0, A: 0, N: 0, P: 0 };
+
+  dimQuestions.forEach(q => {
+    const val = answers[q.id];
+    if (val) {
+      scores[q.dim] += val;
+      counts[q.dim]++;
+    }
+  });
+
+  // Average score per dimension
+  let avg = {};
+  for (let d of ['I','E','R','W','B','A','N','P']) {
+    avg[d] = counts[d] > 0 ? scores[d] / counts[d] : 3;
+  }
+
+  // Determine type (winning side of each dimension pair)
+  let typeDim = {
+    dim1: avg['I'] >= avg['E'] ? 'I' : 'E',
+    dim2: avg['R'] >= avg['W'] ? 'R' : 'W',
+    dim3: avg['B'] >= avg['A'] ? 'B' : 'A',
+    dim4: avg['N'] >= avg['P'] ? 'N' : 'P',
+  };
+
+  let typeCode = typeDim.dim1 + typeDim.dim2 + typeDim.dim3 + typeDim.dim4;
+
+  // Dimension percentages for visualization (0=left pole, 100=right pole)
+  let dimPcts = {
+    dim1: avg['E'] / (avg['I'] + avg['E']) * 100,  // 0=I, 100=E
+    dim2: avg['W'] / (avg['R'] + avg['W']) * 100,  // 0=R, 100=W
+    dim3: avg['A'] / (avg['B'] + avg['A']) * 100,  // 0=B, 100=A
+    dim4: avg['P'] / (avg['N'] + avg['P']) * 100,  // 0=N, 100=P
+  };
+
+  return { typeCode, dimPcts, avg, typeDim };
+}
+
+function calculatePhase() {
+  let counts = { orienting: 0, experimenting: 0, committing: 0, integrating: 0, renewing: 0 };
+  phaseQuestions.forEach(q => {
+    const val = answers[q.id];
+    if (val) counts[val]++;
+  });
+
+  // Find max
+  let maxCount = 0;
+  let phase = 'orienting';
+  const priority = ['orienting', 'experimenting', 'committing', 'integrating', 'renewing'];
+  for (let p of priority) {
+    if (counts[p] > maxCount) {
+      maxCount = counts[p];
+      phase = p;
+    }
+  }
+  return phase;
+}
+
+// ==================== TYPE DATA ====================
+const typeProfiles = {
+  IRBN: { name: "闷声扎根的人", tagline: "不需要观众，自己就是裁判", desc: "你是一个不怎么需要外部确认的人。你自己定义什么是「对」，然后在选定的那一小块地里默默往下挖。你不急着让别人看见，也不觉得非得出什么惊天动地的成果——过程本身就让你踏实。你擅长的是：在一个吵吵嚷嚷的世界里，安静地把事情做好、把人照顾好、把日子过透。但你也要警惕一个毛病：有时候你太不在意别人了，以至于那些真正值得听的反馈也被你挡在外面。" },
+  IRBP: { name: "跟自己较劲的独狼", tagline: "标准是自己的，作品是自己的，路也是自己的", desc: "你心里有一把很准的尺子——但你量的不是别人，是你自己。你选定一个方向后会往死里磕，但你不是为了给谁看，你就是觉得「这事可以做得更好」。你不喜欢跟风，你更想留下一点真正经得起时间的东西。你的危险在于：你太容易一个人扛。你总觉得别人帮不上忙、或者会拖慢你。但有些事，一个人真的做不了。" },
+  IRAN: { name: "不吭声的狠角色", tagline: "嘴上不说，心里有数，手上不停", desc: "你是那种看起来不声不响、但一出手就让人闭不上嘴的人。你有内在的目标阶梯，不需要别人给你画路线图。你对自己有要求，而且不低——但你也不需要一个观众席来证明你做到了。你乐于带人、教人、把人托起来，但你自己永远站在后面。你的盲区：有时候你太安静了，以至于那些该看到你的人，真的没看到你。" },
+  IRAP: { name: "独行的规则改写者", tagline: "一个人就是一个实验室，自己定义什么是对的，然后做出来", desc: "你是那种特别「难搞」的人——因为你不吃别人那套标准。你钻进一个领域，把它吃透，然后从内部推翻它。你不需要认可，你需要的是影响力。你可能不太合群，但你不在乎。你在乎的是：你有没有做出你心里那个版本的东西。你的风险：孤独。你的路注定不是大多数人能陪你走的，找到那几个能理解你的人，别弄丢了。" },
+
+  IWBN: { name: "四处溜达的哲学家", tagline: "路本身就是答案，不需要赶着去哪", desc: "你看起来好像没什么「正事」——但你在做一件很奢侈的事：你在体验人生。你对很多东西好奇，不急着选、也不想选。你不靠外部成就续命，你靠的是沿途的风景和跟人的深度连接。你的问题不是没能力，是你太容易「再看看」。有些时候，「再看看」会变成「再也没看」——有些门，过了时间真的会关上。" },
+  IWBP: { name: "拴不住的野马", tagline: "不被定义，不被驯服，一直在路上", desc: "你是那种别人想给你贴标签、但永远贴不上的人。你有自己的价值观，但拒绝被框在任何一种活法里。你不追热点——你自己就是热点的源头。你追求的不是安稳，是表达。你是来创造的、来体验的、来燃烧的。你的软肋：飘。你飞得太自由，有时候会忘记脚底下需要有一块可以降落的地。" },
+  IWAN: { name: "到处开花的实干派", tagline: "不是不专注，是专注力太贵，得分着花", desc: "你不是传统意义上的「深耕者」——但你也不是浅尝辄止。你在每一个你碰过的领域里都能搞出名堂，而且你是靠内在驱动力在搞，不是做给别人看的。你的广度本身就是一种深度。你擅于把不同领域的经验串成自己的东西。但你说不定也感觉到了：有时候你太散了，那些真正需要一口气打穿的事，你容易在半路被新的兴趣拐跑。" },
+  IWAP: { name: "不按套路来的跨界者", tagline: "用别人看不懂的方式，做别人没想过的事", desc: "你是那种让传统人士头疼的人——因为你不在任何一个框里。你内在驱动、热爱探索、追求实质成果、而且总想搞点新的。你可能同时在做好几件看起来八竿子打不着的事，但你知道它们在某个点上会汇合。你不是乱来——你是有一种别人暂时还看不到的逻辑。你的挑战：你需要学会在关键时刻「聚焦」，否则你的能量会散成一地烟花，漂亮但没留下什么。" },
+
+  ERBN: { name: "被认可的压舱石", tagline: "在一个认可的体系里，把自己活成定海神针", desc: "你需要外部给你一个舞台——但一旦上了台，你就是最稳的那个。你会在一个方向上持续投入，成为可以被依赖的人。你不见得是最耀眼的，但你是最让人踏实的。你从踏实的工作和深度的关系中获得满足，而不是从不断的刺激。你的暗面：你太在乎「靠谱」这个标签了，以至于有时候你不敢做那个「不靠谱但很重要」的决定。" },
+  ERBP: { name: "聚光灯下的匠人", tagline: "在主流认可的框架里，悄悄做得不一样", desc: "你需要别人看到你、认可你——这没什么好丢人的。但你不是那种哗众取宠的人，你拿了关注之后，是真的有东西。你在选定领域里深耕，然后从内部推动改变。你追求的是「被认可的独特」——既有大众的掌声，又有自己的印记。你的风险：你可能会在「讨好市场」和「坚持自己」之间摇摆太久，最后两边都差一点。" },
+  ERAN: { name: "卷王本王", tagline: "在看得见的阶梯上拼命爬，顺便把人拉上来", desc: "你是一个需要「进度条」的人——你需要看到自己在往上走，而且需要有人看到你在往上走。但你跟那些只卷自己的人不一样：你会伸手拉别人。你是那种「这个团队有你就稳了」的人。你努力、有野心、而且不藏着掖着。你的隐患：你太在意阶梯了。如果有一天阶梯没了，或者方向反了，你能不能接受「往下走也是往前走」？" },
+  ERAP: { name: "一边拿奖一边拆台的人", tagline: "在体系里爬到顶，然后把天花板掀了", desc: "你是那种让人又爱又怕的人。你能在体制内玩到最高段位——拿奖、拿头衔、拿认可——但你心里从来不满足于「守成」。你要在一个领域里开新路。你有冠军的实力，也有革命者的冲动。你的危险：你的「开创」有时候会被你的「成就焦虑」绑架——你是在真的创新，还是在搞一个新项目来拿下一块奖牌？分清楚。" },
+
+  EWBN: { name: "人见人爱的连接者", tagline: "在一个个人群之间游走，不算计，但留下了什么", desc: "你需要人群，人群也需要你。你不是那种在一个坑里蹲得住的人，但你的天赋不在这——你的天赋是连接。你在不同圈子之间穿针引线，把对的人放在一起。你从关系的品质和日常的暖意中获得能量，而不是从目标的达成。但你也要问自己一个问题：你帮了那么多人连接，你自己呢？你有没有在别人身上花光了时间，却忘了给自己搭一条路？" },
+  EWBP: { name: "潮水的风向标", tagline: "你不是在追潮流，你就是潮流的方向", desc: "你对趋势有种动物般的直觉。你不是分析出来的——你是嗅出来的。你在多个领域游走，保持鲜活，然后用自己的审美和表达重新定义什么「对」。你不是那种传统意义上的「成功人士」，但你是那种「所有人都在看你在做什么」的人。你的软肋：潮水会转向。你要确保你身上有东西是潮水带不走的，不只是「潮」本身。" },
+  EWAN: { name: "每条赛道都想赢的人", tagline: "多点开花，每个点都要拿结果", desc: "你的精力条比别人长一截。你能同时跑好几条赛道，而且每一条你都想要一个像样的成绩。你不是那种「试试就算了」的人——你是真的要在每个领域抠出成果。你不会停下来，因为停下来会让你慌。你的问题：你是不是在用「同时在做好几件事」来逃避「选一件事做到底」？你在害怕什么——怕选错了，还是怕选定了之后发现自己不够好？" },
+  EWAP: { name: "风暴本人", tagline: "天生的变革者，在哪里都要改写游戏规则", desc: "你是那种让安稳的人不太安稳的存在。你对外部变化极度敏感，你同时在多个前沿活跃，你追求的不是小打小闹而是真正的改变，而且——你做得出来。你不是空想家，你是实干型的颠覆者。你能带着一群人往前走，因为你的能量真的会传染。但你的暗面也很明显：风暴会累。你得学会不把自己当永动机。偶尔停下来，不是失败，是保养。" },
+};
+
+const phaseProfiles = {
+  orienting: {
+    name: "定向期",
+    number: "Phase 1",
+    desc: "你现在最核心的状态就一个字：找。你在找自己到底要什么、在乎什么、适合什么。这阶段最难受的地方是——你周围的人可能都看起来很有方向，只有你感觉自己在雾里。别慌。定向期不是你落后了，是你在搭建操作系统。你现在需要的不是「答案」，是「好的问题」和「允许自己暂时不知道」的勇气。多给自己一些什么都不做的空间，答案会在你安静下来之后自己浮出来。",
+  },
+  experimenting: {
+    name: "实验期",
+    number: "Phase 2",
+    desc: "你现在在做一件聪明的事：用低成本的方式试错。换工作、学新东西、混新圈子——这些都不是「浪费时间」，是你的人体实验数据。但我要问你一句：你是真的在做实验，还是在用「做实验」来逃避「下结论」？实验的终点是决策。给自己每个实验设个期限，到期了就复盘、打分、做决定。别把实验做成拖延。另外——如果你已经试了三五年还在试，那你可能不是在做实验，你是在害怕选。",
+  },
+  committing: {
+    name: "深耕期",
+    number: "Phase 3",
+    desc: "你选了。现在最难的部分来了：坚持。深耕期不是浪漫的——它是枯燥的、重复的、有时候你会怀疑自己是不是选错了的。但这就是深耕的本来面目。没有人能在每一个瞬间都充满激情，真正的深耕是你在没感觉的时候也继续做。你现在需要的是节奏感和耐心，不是更多的选择。但也要提醒你一句：深耕不等于瞎坚持。如果方向真的不对，换方向不是失败，是不跟沉没成本较劲。",
+  },
+  integrating: {
+    name: "整合期",
+    number: "Phase 4",
+    desc: "你已经爬过山了。现在你不急着爬下一座——你在想：这些山串起来是什么故事？你现在更多思考的是平衡、回馈和意义。你开始在意身体的感受了，开始想把自己的经验传下去了，开始觉得「够好」比「更多」重要了。这个阶段最容易被误解为「没野心了」。不是没野心，是你对野心的定义升级了。你现在最重要的任务：把你的经历串成一个你能信服的叙事。不是为了给别人看——是给你自己看。",
+  },
+  renewing: {
+    name: "焕新期",
+    number: "Phase 5",
+    desc: "你在经历一场不太舒服的蜕皮。旧的方向、旧的身份、旧的意义感——都在褪色。你可能会觉得自己是不是「退步了」或者「失败了」。不是的。焕新期是成长的一部分，不是成长的失败。所有真正重要的转型，中间都有一段「旧的已经不要了、新的还没找到」的真空期。你的任务不是赶紧跳过这个阶段，而是待在里面，好好感受它。它在告诉你一些重要的东西——关于你到底是谁，而不是你做了什么。",
+  },
+};
+
+// ==================== MATCH MATRIX ====================
+// Returns { level: 'high'|'medium'|'low', title: '', body: '' }
+function getMatchAnalysis(typeCode, phase) {
+  // Phase-to-type alignment: some phases are naturally more aligned with certain type traits
+  const I = typeCode[0] === 'I';
+  const R = typeCode[1] === 'R';
+  const B = typeCode[2] === 'B';
+  const N = typeCode[3] === 'N';
+
+  let level, title, body;
+
+  // Orienting: most aligned with I (self-reflection); tension with E (seeks external validation)
+  if (phase === 'orienting') {
+    if (I) {
+      level = 'high';
+      title = '你正在做你最擅长的事——问自己问题';
+      body = '定向期的核心任务就是向内看，而你天生就是往内看的人。你不太会被外界的声音带歪，这在你这个阶段是巨大的优势。很多人在定向期最大的问题是：他们太着急去找外面的答案了——考个什么证、进个什么公司、走哪条别人走过的路。而你天然地知道，真正的答案得从里面找。现在你要做的只有一件事：给自己足够多安静的时间。别急着「想明白」，你会想明白的。';
+    } else {
+      level = 'medium';
+      title = '定向期对你来说，有一个不太舒服的提醒';
+      body = '你是那种靠外部反馈来校准自己的人——这本身不是问题，但在定向期，它可能变成一个陷阱。因为你太习惯看别人了：看别人在做什么、看别人怎么评价、看哪条路「看起来更对」。但定向期要问的问题是：「如果没有人在看，我想要什么？」这不是一个舒服的问题。你可能已经躲了它很久了。但现在不回答，以后会更难回答。试着把你的「外部雷达」关掉一会儿。刚开始你会慌，但你得撑过去。';
+    }
+  }
+  // Experimenting: most aligned with W (explore); tension with R (prefers depth)
+  else if (phase === 'experimenting') {
+    if (!R) {
+      level = 'high';
+      title = '实验期是你的游乐场——但别玩太久';
+      body = '你的天性就是探索、切换、尝新。实验期对你来说简直如鱼得水——你喜欢变化、你不怕不确定、你享受过程。你这个阶段过得应该不算难受。但我要提醒你一件事：实验期的目的是「找到然后选」，不是「一直试下去」。我见过太多你这个类型的人，把实验期过成了终身模式。你是不是也有这个倾向？在实验期里待得太舒服，以至于忘了它是一个过渡阶段，不是终点站。给自己设一个截止日期。到那天，做选择。';
+    } else {
+      level = 'medium';
+      title = '实验期在逼你做你最不擅长的事：别急着定';
+      body = '你是那种想找到一块地就往下扎的人。你天然地不喜欢「飘着」的感觉。但实验期偏偏就是一个需要你飘一飘的阶段——你要允许自己浅尝、试探、不承诺。你可能已经在这个阶段感到浑身不舒服了：「我是不是在浪费时间？」「为什么不能直接选一个往下走？」我告诉你实话：你之所以难受，不是因为你走错了，是因为实验期对你这种人来说就是不舒服的。你携带的「扎根本能」是一把双刃剑——它会帮你在对的阶段冲得很快，但在实验期，它会让你焦虑。试着把实验当成一个项目：给它一个明确的起止时间，在这段时间内，允许自己「不做决定」。';
+    }
+  }
+  // Committing: most aligned with R (depth); tension with W (variety seeking)
+  else if (phase === 'committing') {
+    if (R) {
+      level = 'high';
+      title = '深耕期是你的地盘，火力可以全开了';
+      body = '终于到了你一直在等的阶段。深耕期的核心——选定、投入、积累——正是你最舒服的姿势。你不需要别人推，你会自己往下钻。这个阶段就一件事：把你的扎根本能发挥到极致。但有一句不太好听的话：深耕不是固执。三年之后如果发现自己凿错了方向，你舍不舍得换？你这种类型最容易掉进「沉没成本」的坑——因为已经投了太多，所以不愿意承认选错了。定期抬头看看，别只顾着低头挖。';
+    } else {
+      level = 'medium';
+      title = '深耕期在问你一个你不想回答的问题：你能选吗？';
+      body = '你的天性热爱多元、变化和可能性——但深耕期恰恰需要你把一些门关上。这可能是你最害怕的事：选了A，就意味着暂时不选B、C、D。你担心错过。我直接一点：你一定会错过。选了任何一条路，你都会错过其他所有的路。但你不选，你每条都在错过——因为你哪条都没真正走。你不是要放弃好奇心，你是要学会把好奇心安放在一个主线上。一个深的方向，加一两个探索支线。不需要完全锁死自己，但需要一个重心。';
+    }
+  }
+  // Integrating: most aligned with B and N (being & nurture); neutral otherwise
+  else if (phase === 'integrating') {
+    if (B && N) {
+      level = 'high';
+      title = '整合期是你最自然的样子';
+      body = '你对生命品质的感知力、对关系的重视、对滋养他人的本能——这些在整合期全部用上了。你不是那种需要不断用新成就来证明自己的人，你天然懂得「够好了」是什么意思。你在整合期要做的就是把你已经有的东西——经验、智慧、关系——沉淀下来，然后以一种你自己的方式传递出去。不是「退居二线」，是找到了另一种影响力。';
+    } else if (B || N) {
+      level = 'high';
+      title = '整合期有你一半的天赋，另一半需要刻意练习';
+      body = '整合期需要的能力——平衡、回馈、内在满足——你身上至少有一半是天然具备的。这已经很好了。你不是从头学起，你是有基础的。另一半可能需要你刻意一些：如果你偏A（达成型），你需要练习「停下来品味」；如果你偏P（开创型），你需要练习「珍惜已有的东西」。整合期不是让你放弃你擅长的，是让你加一些你不会的。';
+    } else {
+      level = 'medium';
+      title = '整合期在温柔地削你';
+      body = '你的类型是冲的、追的、开创的——这在你之前的阶段帮你赢了太多了。但整合期不是一个「再赢一轮」的阶段。它是一个让你停下来的阶段。你可能已经在心里嘀咕了：「停下来？那我岂不是在退步？」这就是你需要面对的。你的价值不在于你多能冲。整合期要教你的就是这一句话：你已经够了。不需要再证明什么了。如果你现在还在拼命找下一个目标，问自己——你是不是在用「继续冲」来逃避「停下来面对自己」？';
+    }
+  }
+  // Renewing: universal tensions, but I vs E experience it differently
+  else {
+    if (I) {
+      level = 'medium';
+      title = '旧路断了。好消息是，你不需要外界的指南针。';
+      body = '焕新期很不好过——旧的已经不对了，新的还没出来。中间这段真空期，是所有阶段里最让人不安的。但你有一个优势：你不需要别人告诉你该往哪走。你的罗盘在里面。这个阶段你要做的不是赶紧找到答案，而是允许自己「不知道」。多给自己一些独处和安静的时间。你不是迷路了——你是在重新画地图。这个过程急不来，但结果是值得的：你每一次焕新之后，都会比之前更接近自己。';
+    } else {
+      level = 'medium';
+      title = '旧的外部参照系正在失效。这是好的。';
+      body = '对你这类型的人来说，焕新期特别难受——因为你看重的外部指标（收入、title、认可、别人的看法）可能正在告诉你一些你不想听的东西。你靠这些参照物导航了很久，但在焕新期，它们会集体失灵。不是它们错了，是你变了。你以前觉得重要的东西，现在可能不那么重要了。这让你慌——因为你还没有建立起新的参照系。现在就是建立它的时候：在「仍然在意世界」和「不被世界定义」之间，找到你的平衡点。别急着跳到下一个方向。在过渡期里待一会儿——它在你身上正在起作用。';
+    }
+  }
+
+  return { level, title, body };
+}
+
+// ==================== SUGGESTIONS ====================
+function getSuggestions(typeCode, phase) {
+  const suggestions = [];
+
+  // Phase-based suggestions
+  const phaseTips = {
+    orienting: [
+      "每周至少 2 小时彻底独处——不拿手机、不听东西、就走路或者坐着。一开始你会想逃，忍住了。",
+      "拿张纸，不假思索地写：如果没有人会评价我，我最想花时间在什么事上？写 20 个，别停。",
+      "做一次「信息断食」——一周不刷朋友圈、不刷短视频。看看你脑子里自己冒出来的东西是什么。那才是你的。",
+    ],
+    experimenting: [
+      "给你现在在试的每一件事，设一个死线。到日子了必须写复盘：这件事适合我吗？yes/no/not yet。不做复盘的实验是借口。",
+      "搞一个「能量日志」：每次做完什么事，记录一下——做完之后是电力满了还是电力空了？30 天之后看规律。",
+      "找那个已经在你想走的路上走了 5 年以上的人，请他喝杯咖啡。问真实的问题，不是「你觉得我该做什么」，是「你干到第三年的时候想过放弃吗，为什么没走」。",
+    ],
+    committing: [
+      "保护你的注意力，像保护你的银行存款一样。删掉那些「顺便看看」的 app 和信息源。90 天，深度专注一件东西。",
+      "找一个也在深耕的人当搭子——不是 mentor，是 peer。每周互相汇报进度。孤独是深耕的一部分，但不需要从头到尾都一个人。",
+      "枯燥是正常的。不激情也是正常的。你不是出了问题，你是在做一件需要时间的事。给自己建一个仪式——比如每天同一个时间同一个地方开始——来帮自己撑过那些没感觉的日子。",
+    ],
+    integrating: [
+      "用一段文字把你的人生串起来：你做过的事、换过的方向、经历过的低谷——它们之间的逻辑是什么？不是写给别人看的简历，是写给你自己看的故事。",
+      "把你的经验变成一种可以被人拿到的东西。写下来、录下来、讲出来。你经历过的，有一个人正在经历。",
+      "练习一句话：「够了。」不是放弃进步，是学会在进步的同时也能停下来喘气。你已经走到了一个不需要再向谁证明什么的阶段。享受它。",
+    ],
+    renewing: [
+      "允许自己乱。允许自己低落。你不是在退步，你是在蜕皮。蜕皮的时候没有谁是好看的。",
+      "别急着跳到下一个方向。给自己设一段「不做决定的过渡期」——比如 3 个月，不投简历、不开新项目、不逼自己。在过渡期里，你只需要感受。",
+      "去找一个经历过类似转型的人聊天。不是那种「我转型成功了」的励志故事，是真的经历过那个中间地带的人。他们会告诉你：真空期是有意义的。",
+    ],
+  };
+
+  suggestions.push(...phaseTips[phase]);
+
+  // Type-based additional suggestion
+  const I = typeCode[0] === 'I';
+  const R = typeCode[1] === 'R';
+  const B = typeCode[2] === 'B';
+  const N = typeCode[3] === 'N';
+
+  if (I) suggestions.push("你自带导航。别老去找别人帮你指路——你比他们都清楚什么适合你。你的问题不是不知道，是不敢信。");
+  else suggestions.push("你需要外界的反馈，这没什么，别跟自己较劲。但找对人——找那些会说真话的人，不是只会鼓掌的。");
+  if (R) suggestions.push("记得每隔一段时间抬头检查：你现在做的这件事，方向还对吗？深耕和固执穿同一件衣服，你得分清。");
+  else suggestions.push("你的精力容易发散，用「项目制」管理它：每个兴趣变成一个有限周期的项目，有开头和收尾。别全散在空中。");
+  if (B) suggestions.push("在一个疯狂追结果的世界里，你还能享受过程——这是你身上最有价值的东西。保护好它。别让功利的人说服你「慢」是问题。");
+  else suggestions.push("你追目标的能力很强，但每追到一个就问自己一句：然后呢？如果「然后」永远是「追下一个」，你可能在绕圈。");
+  if (N) suggestions.push("你滋养别人的能力是珍贵的。但你也要问自己：你有没有在用滋养别人来逃避滋养自己？两个都得养。");
+  else suggestions.push("你在前面开路，这很好。但记得回头看：有没有人跟不上你？你最好的创新，是那些能让人一起往前走的东西。");
+
+  return suggestions;
+}
+
+// ==================== RESULT RENDERING ====================
+function showResult() {
+  showScreen('result');
+  const { typeCode, dimPcts, typeDim } = calculateType();
+  const phase = calculatePhase();
+  const profile = typeProfiles[typeCode];
+  const phaseInfo = phaseProfiles[phase];
+  const match = getMatchAnalysis(typeCode, phase);
+  const suggestions = getSuggestions(typeCode, phase);
+
+  const poleLabels = [
+    { left: '内源 I', right: '外源 E' },
+    { left: '扎根 R', right: '飞翔 W' },
+    { left: '存在 B', right: '达成 A' },
+    { left: '滋养 N', right: '开创 P' },
+  ];
+
+  let dimBarsHTML = '';
+  const dimPctValues = [dimPcts.dim1, dimPcts.dim2, dimPcts.dim3, dimPcts.dim4];
+  const dimLetters = [
+    ['I', 'E'],
+    ['R', 'W'],
+    ['B', 'A'],
+    ['N', 'P'],
+  ];
+
+  dimPctValues.forEach((pct, i) => {
+    const leftPct = Math.max(0, 100 - pct);
+    const rightPct = Math.max(0, pct);
+    const dotPos = pct; // percentage from left
+
+    dimBarsHTML += `
+      <div class="dim-row">
+        <div class="dim-label">${dimLetters[i][0]}</div>
+        <div class="dim-bar-wrap">
+          <div class="dim-poles"><span>${poleLabels[i].left}</span><span>${poleLabels[i].right}</span></div>
+          <div class="dim-bar">
+            <div class="dim-bar-fill left" style="width:${leftPct / 2}%"></div>
+            <div class="dim-bar-fill right" style="width:${rightPct / 2}%"></div>
+            <div class="dim-dot" style="left:${pct}%"></div>
+          </div>
+        </div>
+        <div class="dim-label">${dimLetters[i][1]}</div>
+      </div>`;
+  });
+
+  const html = `
+    <div class="result-header">
+      <div class="type-badge">${typeCode}</div>
+      <div class="type-name">${profile.name}</div>
+      <div class="type-tagline">${profile.tagline}</div>
+    </div>
+
+    <div class="section-title">你在四个维度上站在哪里</div>
+    <div class="dimensions">${dimBarsHTML}</div>
+
+    <div class="section-title">你是什么样的人</div>
+    <div class="match-card">
+      <div class="match-body">${profile.desc}</div>
+    </div>
+
+    <div class="section-title">你卡在哪一关</div>
+    <div class="phase-card">
+      <div class="phase-number">${phaseInfo.number}</div>
+      <div class="phase-name">${phaseInfo.name}</div>
+      <div class="phase-desc">${phaseInfo.desc}</div>
+    </div>
+
+    <div class="section-title">你现在走的路，配得上你吗？</div>
+    <div class="match-card">
+      <div class="match-level ${match.level}">${match.level === 'high' ? '很契合——路和人对上了' : match.level === 'medium' ? '有摩擦——有些地方不太对' : '有张力——路和人可能在打架'}</div>
+      <div class="match-title">${match.title}</div>
+      <div class="match-body">${match.body}</div>
+    </div>
+
+    <div class="section-title">接下来可以做什么</div>
+    <div class="suggestions">
+      <ul>${suggestions.map(s => '<li>' + s + '</li>').join('')}</ul>
+    </div>
+  `;
+
+  document.querySelector('#screen-result .result').innerHTML = html;
+  // Scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function restart() {
+  currentIdx = 0;
+  answers = {};
+  showScreen('welcome');
+}
+</script>
+
+</body>
+</html>
